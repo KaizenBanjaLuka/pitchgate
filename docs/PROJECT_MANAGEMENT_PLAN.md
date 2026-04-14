@@ -1,12 +1,12 @@
 # Project Management Plan — Pitchgate
 
-> Version 1.0 · Living document — updated at each phase gate
+> Version 2.0 · Living document — updated at each phase gate
 
 | Field | Detail |
 |---|---|
 | **Project** | Pitchgate — Verified BD Network for Crypto/Web3 |
 | **PM / PO** | Bojan Pilipović |
-| **Plan version** | 1.0 |
+| **Plan version** | 2.0 |
 | **Last updated** | Q4 2024 |
 | **Status** | Phase 1 — Active |
 
@@ -85,13 +85,43 @@ All scope changes follow this process:
 
 ## 2. Schedule Management
 
-### 2.1 Scheduling approach
+### 2.1 Scheduling approach — current (phase-gated flow)
 
-Pitchgate is delivered in a phase-gated model rather than fixed sprints. Each phase has a defined entry condition (what must be true before it starts) and exit condition (what must be true before the next phase begins).
+Pitchgate is currently delivered in a phase-gated model rather than fixed sprints. Each phase has a defined entry condition (what must be true before it starts) and exit condition (what must be true before the next phase begins).
 
-Work within each phase is managed as a continuous flow using the GitHub Kanban board. Issues are pulled from backlog as capacity allows, with no fixed sprint cadence.
+Work within each phase is managed as a continuous flow using the GitHub Kanban board. Issues are pulled from backlog as capacity allows, with no fixed sprint cadence. This is the appropriate model for a solo AI-assisted build — sprint ceremony overhead does not pay off without a team.
 
-### 2.2 Phase structure
+### 2.2 Scheduling approach — sprint-based (team / outsourcing context)
+
+In a team or outsourced delivery context, the scheduling model shifts to fixed sprints inside each phase. The phase gates remain as strategic checkpoints, but delivery rhythm becomes sprint-based.
+
+**Sprint structure:**
+
+| Ceremony | Timing | Purpose |
+|---|---|---|
+| Sprint planning | Sprint start | Pull from backlog, commit to sprint goal, agree acceptance criteria |
+| Daily standup | Daily (15 min) | Blockers, progress, dependencies — async written update in outsourcing context |
+| Sprint review | Sprint end | Demo working software to stakeholders, collect feedback, formal acceptance |
+| Sprint retrospective | Sprint end | Risk review, process health, one improvement to carry forward |
+
+**Sprint length:** 2 weeks recommended for a product in active development. 1 week if the team is new or the domain is uncertain.
+
+**Sprint goal:** every sprint has one sentence describing the value delivered — not a task list. The goal anchors scope decisions during the sprint.
+
+**Velocity-based forecasting:** after 3–4 sprints, average velocity (story points completed per sprint) becomes the forecasting tool. Remaining backlog points ÷ velocity = sprints to completion.
+
+**Backlog structure:**
+
+```
+Epic → User story → Tasks
+```
+
+Example for Pitchgate:
+- Epic: *Trust system*
+- Story: *As a Tier 1 user, I can vouch for another user so they can reach Tier 1*
+- Tasks: API route, vouch cap logic, UI button, email notification, DoD checklist
+
+### 2.3 Phase structure
 
 | Phase | Description | Entry condition | Exit condition |
 |---|---|---|---|
@@ -100,7 +130,7 @@ Work within each phase is managed as a continuous flow using the GitHub Kanban b
 | **Phase 2** | Intent board + AI layer | Phase 1 exit validated | Intent board live, AI matching producing suggestions |
 | **Phase 3** | Semantic resolution engine | Phase 2 validated | Confidence scoring, ranked match suggestions live |
 
-### 2.3 Phase 1 milestone schedule
+### 2.4 Phase 1 milestone schedule
 
 | Milestone | Description | Status |
 |---|---|---|
@@ -111,7 +141,7 @@ Work within each phase is managed as a continuous flow using the GitHub Kanban b
 | M5 | MVP launch — pitchgate.xyz live, waitlist open, Twitter live | ✅ Done |
 | M6 | 100 verified users onboarded — Phase 1 exit criterion met | 🔄 In progress |
 
-### 2.4 Schedule risk
+### 2.5 Schedule risk
 
 The primary schedule risk is the cold start problem: new users cannot reach Tier 1 without existing Tier 1/2 vouchers in their network. This creates a dependency on manual seeding by the admin (Tier 3) and early Tier 2 anchors. Mitigation is covered in the Risk Register.
 
@@ -119,7 +149,7 @@ The primary schedule risk is the cold start problem: new users cannot reach Tier
 
 ## 3. Resource Management
 
-### 3.1 Team structure
+### 3.1 Team structure — current
 
 Pitchgate is a solo-led product. All product, delivery, and architectural decisions are made by the PM/PO. Development is executed via AI-assisted development (Claude Code), with the PM/PO responsible for directing, reviewing, and deploying all output.
 
@@ -130,7 +160,21 @@ Pitchgate is a solo-led product. All product, delivery, and architectural decisi
 | Lead Developer (AI-assisted) | Claude Code (directed by PM) | Feature implementation, API routes, database queries, UI |
 | Infrastructure | Vercel / Railway / Clerk / Resend | Managed services — no internal ops resource required |
 
-### 3.2 Infrastructure and tooling
+### 3.2 Team structure — outsourced / sprint context
+
+In an outsourced or team delivery context, the resource model expands as follows:
+
+| Role | Responsibility |
+|---|---|
+| PM / PO | Backlog ownership, sprint planning, stakeholder comms, vendor management |
+| Outsourced team lead | Day-to-day delivery coordination, first escalation point for blockers |
+| Outsourced developers | Feature implementation against agreed acceptance criteria |
+| QA (outsourced or shared) | Acceptance testing against DoD before sprint review |
+| Stakeholders | Sprint review attendance, feedback, formal acceptance |
+
+**Cross-timezone discipline:** identify the daily overlap window between time zones. All real-time decisions, sprint ceremonies, and escalations requiring live input are scheduled within this window. Everything outside the overlap is async with defined response SLAs — 4 hours for blockers, 24 hours for standard queries.
+
+### 3.3 Infrastructure and tooling
 
 | Layer | Tool | Purpose |
 |---|---|---|
@@ -142,9 +186,9 @@ Pitchgate is a solo-led product. All product, delivery, and architectural decisi
 | AI development | Claude Code | AI-assisted feature development |
 | Waitlist | Tally | Pre-launch waitlist capture |
 
-### 3.3 Environment variables and secrets
+### 3.4 Environment variables and secrets
 
-All secrets are managed via environment variables. No secrets are committed to the repository. The following are required for Phase 1:
+All secrets are managed via environment variables. No secrets are committed to the repository.
 
 | Variable | Service | Required |
 |---|---|---|
@@ -177,12 +221,24 @@ Response strategies follow standard PMBOK categories: avoid, mitigate, transfer,
 | R-04 | Scope creep into Phase 2 before Phase 1 is validated | High | Medium | **Avoid** — Phase gates explicitly defined in AGENTS.md. Any Phase 2 feature request requires explicit phase gate decision before work begins. No exceptions. | PM | Active |
 | R-05 | Vouching system abuse — Tier 1 users colluding to vouch fake accounts | Medium | High | **Mitigate** — Monthly vouch caps (5 outgoing for Tier 1, 20 for Tier 2). One vouch per pair enforced by UNIQUE constraint. Tier 2 anchors personally known to admin. | PM | Active |
 | R-06 | AI-assisted development produces insecure code (SQL injection, auth bypass) | Medium | High | **Mitigate** — Parameterized queries enforced in all DB interactions. Auth check at top of every protected API route. Security conventions documented in AGENTS.md and reviewed per session. | PM | Active |
-| R-07 | Low user activation — waitlist signups do not convert to active profiles | High | Medium | **Mitigate** — Personal outreach to first cohort from existing HoudiniSwap and Web3 BD network. Onboarding flow kept minimal (no friction on profile creation). | PM | Active |
-| R-08 | Resend email deliverability issues cause failed match notifications | Low | Medium | **Mitigate** — Email is fire-and-forget (never blocks API response). Errors logged silently. Contact reveal is accessible in-app regardless of email delivery. | PM | Active |
+| R-07 | Low user activation — waitlist signups do not convert to active profiles | High | Medium | **Mitigate** — Personal outreach to first cohort from existing HoudiniSwap and Web3 BD network. Onboarding flow kept minimal. | PM | Active |
+| R-08 | Resend email deliverability issues cause failed match notifications | Low | Medium | **Mitigate** — Email is fire-and-forget, never blocks API response. Contact reveal accessible in-app regardless of email delivery. | PM | Active |
 
 ### 4.3 Risk review cadence
 
-Risks are reviewed at each phase gate and whenever a new high-impact issue is raised. Risk register is updated in this document at each review.
+**In the current phase-gated model:** risks are reviewed formally at each phase gate and whenever a new high-impact issue is raised.
+
+**In a sprint-based model:** risk management is embedded into existing ceremonies — not treated as a separate meeting.
+
+| Ceremony | Risk activity |
+|---|---|
+| Sprint planning | Quick scan of sprint items for new technical unknowns or dependencies before committing |
+| Daily standup | Blockers surfaced in real time — a blocker unresolved for 48h is an active risk to the sprint goal |
+| Sprint review | Stakeholder feedback may surface scope or expectation risks not previously visible |
+| Sprint retrospective | Formal risk look-back — what materialized, what is new, what gets added to the register |
+| Phase gate / release | Full risk register review before any major release or phase transition |
+
+The rule: risks are detected continuously in standups, reviewed lightly in planning, and formally assessed once per sprint in the retrospective.
 
 ---
 
@@ -190,21 +246,46 @@ Risks are reviewed at each phase gate and whenever a new high-impact issue is ra
 
 ### 5.1 Stakeholder communication approach
 
-Given the solo-led structure, formal internal communication overhead is minimal. Communication is focused on two audiences: **external users/community** and **the PM's own delivery record**.
+In an agile model, most communication becomes **pull, not push.** Status is made permanently visible through the board, the sprint goal, and the backlog — so stakeholders can check in when they need to. Formal communication happens at defined moments (sprint review, planning) rather than through continuous status reports.
+
+In an outsourcing / cross-timezone context, all communication is **written by default.** Verbal agreements do not exist. Decisions, change requests, and escalations are documented in the agreed channel before they are acted on.
 
 ### 5.2 Communications matrix
 
 | Audience | Channel | Frequency | Content | Owner |
 |---|---|---|---|---|
-| Waitlist / early users | Tally (waitlist), Twitter @pitchgatexyz | As needed / milestone-based | Launch updates, feature announcements, onboarding invites | PM |
-| Tier 2 anchors (trust gatekeepers) | Direct message (Telegram / Twitter) | Weekly during seeding phase | Onboarding status, vouching guidance, feedback requests | PM |
-| Active users (Tier 1+) | In-app email via Resend | Event-triggered | Connection request received, request accepted, vouch received | Automated |
-| Delivery record (self) | GitHub issues + Kanban board | Continuous | Feature status, decisions, blockers, retrospective notes | PM |
-| Public / market | Twitter @pitchgatexyz, Medium | Monthly / milestone | Product updates, BD ecosystem commentary | PM |
+| Core team (internal) | Standup | Daily | Blockers, progress, dependencies | Team |
+| Core team (internal) | Sprint planning | Every sprint start | Commitment, sprint goal, capacity | PM |
+| Core team (internal) | Retrospective | Every sprint end | Process health, risk review | PM |
+| Stakeholders / client | Sprint review / demo | Every sprint end | Working software, formal acceptance, feedback | PM |
+| Stakeholders / client | Slack / async channel | As needed | Decisions, blockers needing input | PM |
+| Stakeholders / client | Roadmap / backlog | Always visible | What's planned, what's coming | PM |
+| Outsourced team | Daily written standup | Daily (async) | Progress, blockers, questions | Team lead |
+| Outsourced team | Sprint planning call | Every sprint start | Scope, priorities, acceptance criteria | PM |
+| Outsourced team | PR / code review | Continuous | Quality, standards, feedback | PM / lead dev |
+| Executive / sponsor | Sprint review summary | Every 2–4 sprints | Velocity, risks, milestone progress | PM |
+| Waitlist / early users | Twitter, Tally | Milestone-based | Launch updates, onboarding invites | PM |
+| Active users (Tier 1+) | Transactional email via Resend | Event-triggered | Request received, accepted, vouch received | Automated |
 
 ### 5.3 Escalation path
 
-As a solo-led project, escalation is self-managed. Any blocker that cannot be resolved within 48 hours is documented as a GitHub issue with the label `blocker` and triaged at the next working session. Critical security issues are treated as P0 — all other work stops until resolved.
+**Track 1 — delivery escalation (internal agile)**
+
+> Blocker identified in standup → PM attempts to resolve within 24h → if unresolved, escalated to sponsor or relevant stakeholder → if it threatens the sprint goal, sprint scope is negotiated explicitly — never silently absorbed
+
+The key principle: you never let a blocker silently kill a sprint goal. Surface it early, make a conscious decision — remove the item, adjust the goal, or clear the blocker. Silence is not a resolution.
+
+**Track 2 — vendor / outsourcing escalation**
+
+> Issue identified (quality, missed delivery, miscommunication) → raised with outsourced team lead first — never skip this step → if unresolved within one sprint → escalated to vendor account manager or engagement lead → if contractual or relationship-level → escalated to sponsor / procurement
+
+All escalations in an outsourcing context are documented in writing before and after resolution. This is not bureaucracy — it is protection for both sides.
+
+**Distinguishing performance vs. process issues:**
+
+A vendor delivering late once is a **performance issue** — address it at team lead level. A vendor consistently missing acceptance criteria is a **process issue** — your definition of done or handoff process is broken, and the PM owns that before blaming the vendor.
+
+**Cross-timezone rule:** anything requiring a real-time decision waits for the overlap window. No async approvals on sprint scope changes, contract scope, or security-critical issues.
 
 ---
 
@@ -212,9 +293,19 @@ As a solo-led project, escalation is self-managed. Any blocker that cannot be re
 
 ### 6.1 Quality approach
 
-Quality is enforced through documented conventions (AGENTS.md), consistent code review (PM reviews all AI-generated output before commit), and a set of non-negotiable rules applied to every feature.
+In agile, quality shifts left — it is built into every step of the sprint, not tested at the end. In an outsourcing / cross-timezone context, quality problems are almost always upstream: vague acceptance criteria, unclear Definition of Done, or assumptions made in the gap between time zones. Fix the brief before blaming the team.
 
-### 6.2 Non-negotiable quality rules
+### 6.2 Four quality layers — agile / outsourcing context
+
+**Definition of Done** — the primary quality gate. A shared, written DoD agreed with the outsourced team before sprint 1. Every story must meet it before it is called done. No exceptions negotiated mid-sprint. Output that does not meet DoD goes back — it is not accepted and "fixed later."
+
+**Acceptance criteria per story** — every item has written AC before it enters the sprint. Not during. Not after. This is the main protection against timezone ambiguity — the team should not need to ask what done looks like at 2am your time.
+
+**Async code review via PRs** — no code merges without a PR review. Written, tracked, resolved before merge. This is the continuous quality touchpoint that works across time zones, replacing in-person peer review.
+
+**Sprint review as formal acceptance** — the sprint review is a gate, not a demo. Stakeholders formally accept or reject what was built. Anything not accepted returns to the backlog as a new story with clear remediation criteria.
+
+### 6.3 Non-negotiable quality rules — Pitchgate specific
 
 **Security**
 - Contact fields (telegram, contact_email) are never returned in any API response unless a confirmed match exists — enforced at query level
@@ -239,7 +330,7 @@ Quality is enforced through documented conventions (AGENTS.md), consistent code 
 - Never use `git add .` — always add files explicitly by name
 - .gitignore verified before every first push to a new environment
 
-### 6.3 Definition of done
+### 6.4 Definition of done — Pitchgate
 
 A feature is considered done when:
 
@@ -255,24 +346,38 @@ A feature is considered done when:
 
 ## 7. Change Management
 
-### 7.1 Change request process
+### 7.1 Change management approach
 
-| Step | Action |
+In agile, the backlog is the change mechanism. Small changes flow through it naturally. Big changes — anything affecting a sprint in flight, a release date, contract scope, or budget — require a formal decision before work starts.
+
+In an outsourcing context, ungoverned changes create billing disputes, scope arguments, and blown timelines. The vendor should never start work on something outside agreed sprint scope without written confirmation from the PM. This protects both sides.
+
+### 7.2 What flows through the backlog vs. what requires formal process
+
+| Change type | Process |
 |---|---|
-| 1 | Change identified — raised as GitHub issue with label `change-request` |
-| 2 | PM assesses: scope impact, schedule impact, architectural risk |
-| 3 | Decision documented on the issue: approved / rejected / deferred with rationale |
-| 4 | If approved: AGENTS.md updated, work added to backlog |
-| 5 | If deferred: labelled with correct phase, added to backlog, not actioned |
+| New story, minor scope addition, reprioritization | Added to backlog, estimated, pulled into future sprint through normal planning |
+| Change to a sprint currently in flight | Formal decision required — document impact, get PM sign-off, update sprint goal if accepted |
+| Change affecting release date or contract scope | Full change request — written, impact-assessed, signed off before work starts |
+| Security-critical change | P0 — all other work stops, PM review + security checklist before deploy |
 
-### 7.2 Change authority
+### 7.3 The PM's role in change management
+
+The PM is the buffer between stakeholder enthusiasm and team capacity. Stakeholders will always want to add things mid-sprint. The response is never "no" — it is: **"We can add this. What comes out?"** Making the trade-off visible is the job.
+
+### 7.4 Change authority
 
 | Change type | Authority |
 |---|---|
 | Minor — UI, copy, non-breaking API change | PM self-approved |
 | Significant — new feature, schema change, new dependency | PM self-approved with AGENTS.md update |
-| Phase gate — moving from one phase to another | PM gate review required — explicit go/no-go decision documented |
-| Security-critical — any change touching auth, contact fields, or tier logic | PM review + security checklist before deploy |
+| Phase gate — moving from one phase to the next | PM gate review — explicit go/no-go documented |
+| Security-critical — auth, contact fields, tier logic | PM review + security checklist before deploy |
+| Contract / budget scope (outsourcing) | PM + sponsor sign-off — written confirmation required |
+
+### 7.5 Cross-timezone change discipline
+
+Change requests raised outside the overlap window receive a written acknowledgment but no approval until the next live sync. No async approvals on anything affecting sprint scope, contract scope, or security. Too much room for misinterpretation.
 
 ---
 
@@ -290,7 +395,7 @@ A phase gate is a formal go/no-go decision point between phases. No Phase 2 (or 
 - [ ] 100 verified Tier 1+ users onboarded
 - [ ] Minimum 50 accepted connection requests with contact reveal confirmed
 - [ ] No open P0 or P1 security issues
-- [ ] Cold start problem demonstrably solved (organic vouching chains active without admin seeding)
+- [ ] Cold start problem demonstrably solved — organic vouching chains active without admin seeding
 - [ ] User feedback collected from minimum 10 active users
 
 **Gate decision outputs:**
@@ -303,4 +408,4 @@ To be defined at Phase 2 kickoff. Minimum criteria will include: intent board li
 
 ---
 
-*This document is the authoritative project management plan for Pitchgate Phase 1. It is updated at each phase gate and whenever a significant change is approved.*
+*This document is the authoritative project management plan for Pitchgate. It is updated at each phase gate and whenever a significant change is approved. Version history is tracked via Git.*
